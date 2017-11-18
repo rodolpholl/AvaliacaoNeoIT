@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewBag.Title = "Teste Neo IT";
+}
+
+<h2>@ViewBag.Title</h2>
+
+
+<fieldset>
+    <legend>Implementação usando Bootstrap</legend>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a href="@Url.Action("Index","CadastroRegioes")">Cadastro de Regiões</a>
+
+        </li>
+        <li class="list-group-item">
+            <a href="@Url.Action("Index","CadastroFornecedorRegiao")">Relacionar Fornecedores e Regiões</a>
+        </li>
+    </ul>
+
+</fieldset>
+<fieldset>
+    <legend>Implementação Usando o Layout Enviado</legend>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a href="@Url.Action("Index","CadastroRegioesClean")">Cadastro de Regiões (Layout Simples)</a>
+
+        </li>
+        <li class="list-group-item" >
+            <a href="@Url.Action("Index","CadastroFornecedorRegiaoClean")">Relacionar Fornecedores e Regiões (Layout Simples)</a>
+        </li>
+    </ul>
+</fieldset>
+
+
+

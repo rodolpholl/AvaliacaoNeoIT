@@ -1,0 +1,198 @@
+﻿@model IEnumerable<AvaliacaoNeoIT.WebUI.Models.RegiaoModel>
+
+@{
+    ViewBag.Title = "Cadastro de Regiões";
+    var linha = 0;
+}
+
+<h2>
+    @ViewBag.Title
+</h2>
+
+
+<hr />
+
+<div class="row">
+    <div class="col-sm-12">
+        <form id="frmCadastroRegiao">
+            <input type="hidden" id="IdRegiaoEdit" />
+            <div class="form-group row">
+
+                @Html.Label("UF *", new { @class = "col-sm-2 col-form-label label-control-custom" })
+                <div class="col-sm-10">
+                    @Html.DropDownList("cbxEstado", (IList<SelectListItem>)ViewData["ListaEstado"], new { @class = "form-control required validaSelecaoEstado" })
+                </div>
+
+            </div>
+            <div class="form-group row">
+
+                @Html.Label("Região *", new { @class = "col-sm-2 col-form-label label-control-custom" }) 
+
+                <div class="col-sm-10">
+                    @Html.TextBox("txtDescricao", "", new { @class = "form-control required" })
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <a href="#" id="btnSalvar" class="btn btn-primary">Salvar</a>
+                    <a href="@Url.Action("Index")" class="btn btn-default">Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+<div class="row">
+    <fieldset class="col-sm-12">
+
+
+        <table class="table" id="tblRegiao">
+            <thead class="thead-light">
+                <tr>
+                    
+                    <th scope="col">
+                        @Html.DisplayNameFor(model => model.Estado.Descricao)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(model => model.Descricao)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(model => model.Ativo)
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    linha = linha + 1;
+                        <tr scope="row" @(item.Ativo != "Ativo" ? "class=danger" : "")>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Estado.Descricao)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Descricao)
+                            </td>
+                            <td >
+                                @Html.DisplayFor(modelItem => item.Ativo)
+                            </td>
+                            <td>
+
+                                <a href="#" onclick="editar(@item.IdRegiao, @item.IdEstado,'@item.Descricao', @linha);" class="btn btn-default">Editar</a>
+
+                                @if (item.Ativo == "Ativo")
+                                {
+                                    @Html.ActionLink("Inativar", "Inativar", new { Id = item.IdRegiao }, new
+                                    {
+                                        id = item.IdRegiao,
+                                        @class = "btn btn-danger"
+                                    })
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("Ativar", "Ativar", new { Id = item.IdRegiao}, new
+                                    {
+                                        id = item.IdRegiao,
+                                        @class = "btn btn-success"
+                                    })
+                                }
+
+
+                        </td>
+                        <td class="invisible">
+                            @Html.HiddenFor(modelItem => item.IdRegiao)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </fieldset>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(function () {
+            
+            
+            $("#btnSalvar").html("Inserir");
+
+
+            $("#btnSalvar").click(function () {
+
+                const formData = {
+                    IdEstado: $("#cbxEstado").val(),
+                    Descricao: $("#txtDescricao").val(),
+                    IdRegiao: $("#IdRegiaoEdit").val()
+                }
+
+                var actionCall
+
+                if (formData.IdRegiao == 0)
+                    actionCall = '@Url.Action("Create")'
+                else
+                    actionCall = '@Url.Action("Edit")'
+
+                $.post(actionCall,
+                        formData,
+                        function (result) {
+                            if (result.error) {
+                                toastr.error(result.message, '@ViewBag.Title', {
+                                    "progressBar": true,
+                                    "timeOut ": "1500",
+                                    "closeButton": true
+                                    
+                                });
+                            }
+                            else {
+                                toastr.success('Operação realizada com Sucesso!', '@ViewBag.Title', {
+                                    "progressBar": true,
+                                    "closeButton": true,
+                                    "timeOut": 1500, 
+                                    "onHidden": redirect,
+                                    "onCloseClick": redirect
+                                                                        
+                                } );
+
+
+                            }
+                        })
+
+
+
+            })
+
+        })
+
+        function redirect(){
+            window.location.href = '@Url.Action("Index")';
+        }
+
+        function editar(idRegiao, idEstado, Descricao, linha) {
+
+            $("#cbxEstado").val(idEstado).change();
+            $("#txtDescricao").val(Descricao);
+            $("#IdRegiaoEdit").val(idRegiao);
+            $("#btnSalvar").html("Alterar");
+
+            var activeRow = $("#tblRegiao tr")[linha];
+            $(activeRow).addClass('active');
+
+
+
+        }
+
+
+
+    </script>
+}
+

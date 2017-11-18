@@ -1,0 +1,164 @@
+﻿@model IEnumerable<AvaliacaoNeoIT.WebUI.Models.FornecedorRegiaoModel>
+
+@{
+    ViewBag.Title = "Cadastro de Regiões do Fornecedor";
+    Layout = "~/Views/layoutClean/layoutClean.cshtml";
+}
+
+<style>
+    .marcarInativo {
+        background-color:#fcdbdb ;
+    }
+</style>
+
+<div class="divBack">
+    <strong>@ViewBag.Title</strong>
+</div>
+<div class="form">
+    <div>
+        <span>Fornecedor</span><span class="obrigatorio">*</span>
+        <div class="select">
+            @Html.DropDownList("cbxFornecedor", (IList<SelectListItem>)ViewData["ListaFornecedor"], new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="espacamento-vert">
+        <button id="btnBuscar">Buscar</button>
+    </div>
+</div>
+
+<div class="grid">
+    <table class="table">
+        <tr>
+
+            <th style="width: 30px"><input type="checkbox" /></th>
+            <th style="width: 300px">UF</th>
+            <th>Região</th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr @(item.Regiao.Ativo == "Inativo" ? "class=marcarInativo" : "") >
+                <td>
+                    @Html.CheckBoxFor(modelItem => item.Selecionado, new { id = $"chkSelect{item.Regiao.IdRegiao}", @class = "chkSelecao" })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Regiao.Estado.Descricao)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Regiao.Descricao)
+                </td>
+
+            </tr>
+        }
+
+    </table>
+</div>
+<div class="espacamento-vert">
+    <button id="btnGravar">Gravar</button>
+</div>
+
+
+
+@section scripts {
+
+    <script type="text/javascript">
+
+    $(function () {
+
+
+        $(".chkSelecao").prop("disabled", true);
+
+        $("#cbxFornecedor").change(function () {
+
+            $("button").removeClass('disabled')
+
+
+            var habilitaBotoes = $("#cbxFornecedor").val() > 0;
+
+            $(".chkSelecao").prop("disabled", !habilitaBotoes)
+
+            if (!habilitaBotoes)
+                $("button").addClass('disabled')
+
+            //$("#btnBuscar").click();
+
+        });
+
+
+        $("#btnBuscar").click(function () {
+
+            $.post('@Url.Action("GetRegioesByFornecedor")', {
+
+                IdFornecedor: parseInt($("#cbxFornecedor").val())
+            },
+            function (result) {
+
+                $(".chkSelecao").prop('checked', false);
+
+                if (result.error) {
+                    alert(result.message);
+                } else {
+
+                    var listRegiao = result.ListRegioes;
+                    for (var i = 0; i < listRegiao.length; i++) {
+                        var regiao = "#chkSelect" + listRegiao[i].IdRegiao.toString();
+                        $(regiao).prop('checked', true)
+                    }
+
+                }
+
+
+            });
+
+
+        });
+
+        $("#btnGravar").click(function () {
+
+
+
+            var listaRegiao = $(".chkSelecao");
+            var ListIdRegion = [];
+
+            for (var i = 0; i < listaRegiao.length; i++) {
+
+                if (listaRegiao[i].checked) {
+                    var IdRegiao = parseInt(listaRegiao[i].id.replace("chkSelect", ""));
+                    ListIdRegion.push(IdRegiao)
+                }
+
+            }
+
+
+            $.post('@Url.Action("AtualizarFornecedorRegiao")', {
+
+                IdFornecedor: parseInt($("#cbxFornecedor").val()),
+                pListaIdRegiao: ListIdRegion
+            },
+            function (result) {
+                if (result.error) {
+                    alert(result.message);
+                    
+                } else {
+                    alert('Atualização Realizada com Sucesso!')
+                    redirect()
+                }
+
+
+            });
+
+
+        });
+
+
+    })
+
+
+    function redirect() {
+        window.location.href = '@Url.Action("Index")';
+    }
+
+    </script>
+
+}

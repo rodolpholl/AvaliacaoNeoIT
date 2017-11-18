@@ -1,0 +1,177 @@
+﻿@model IEnumerable<AvaliacaoNeoIT.WebUI.Models.RegiaoModel>
+
+@{
+    ViewBag.Title = "Cadastro de Regiões";
+    Layout = "~/Views/layoutClean/layoutClean.cshtml";
+}
+
+
+<div class="divBack">
+    <strong>@ViewBag.Title</strong>
+</div>
+
+<div class="form">
+    <div>
+        <input type="hidden" id="IdRegiaoEdit" />
+        <span>UF</span><span class="obrigatorio">*</span>
+        <div class="select">
+            @Html.DropDownList("cbxEstado", (IList<SelectListItem>)ViewData["ListaEstado"])
+            
+        </div>
+        <div class="input">
+            <span class="obrigatorio" style="font-style:italic" id="validationEstado">Campo Obrigatório!</span>
+        </div>
+    </div>
+    <div class="espacamento-vert">
+        <span>Regiao</span><span class="obrigatorio">*</span>
+        <div class="input" >
+            @Html.TextBox("txtDescricao")
+            
+        </div>
+        <div class="input">
+            <span class="obrigatorio" style="font-style:italic" id="validationDescricao">Campo Obrigatório!</span>
+        </div>
+    </div>
+    <div class="espacamento-vert">
+        <button id="btnSalvar">Inserir</button>
+    </div>
+</div>
+<div class="grid">
+    <table class="table">
+        <tr>
+            <th>UF</th>
+            <th>Região</th>
+            <th>Situação</th>
+            <th colspan="2">Ações</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estado.Descricao)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descricao)
+                </td>
+                <td>
+                    <span @(item.Ativo == "Inativo" ? "style=color:red" : "")>@item.Ativo</span>
+                </td>
+                <td>
+                    <a href="#" onclick="editar(@item.IdRegiao, @item.IdEstado,'@item.Descricao');">Editar</a>
+                    
+                </td>
+                <td>
+                    @if(item.Ativo == "Ativo")
+                    {
+                        @Html.ActionLink("Inativar", "Inativar", new { Id = item.IdRegiao })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Ativar", "Ativar", new { Id = item.IdRegiao })
+                    }
+                </td>
+
+            </tr>
+        }
+
+    </table>
+</div>
+
+@section scripts {
+
+
+<script type="text/javascript">
+    
+    $(function () {
+
+        HideValidators();
+
+        $("#cbxEstado").change(function () {
+            $("#validationEstado").hide();
+        });
+
+        $("#txtDescricao").change(function () {
+            $("#validationDescricao").hide();
+        })
+
+        $("#btnSalvar").click(function () {
+
+            const formData = {
+                IdEstado: $("#cbxEstado").val(),
+                Descricao: $("#txtDescricao").val(),
+                IdRegiao: $("#IdRegiaoEdit").val()
+            }
+
+            var erro = false;
+
+            if (formData.IdEstado === "0")
+            {
+                erro = true;
+                $("#validationEstado").show();
+            }
+
+            if (formData.Descricao === '') {
+                erro = true;
+                $("#validationDescricao").show();
+            }
+
+
+            if (erro)
+                return;
+
+            var actionCall
+
+            if (formData.IdRegiao == 0)
+                actionCall = '@Url.Action("Create")'
+            else
+                actionCall = '@Url.Action("Edit")'
+
+            $.post(actionCall,
+                    formData,
+                    function (result) {
+                        if (result.error) {
+                            alert(result.message);
+                        }
+                        else {
+                            alert('Operação Realizada com Sucesso!');
+                            redirect();
+
+                        }
+                    })
+
+
+
+        })
+
+
+    });
+
+    function redirect() {
+        window.location.href = '@Url.Action("Index")';
+    }
+    
+    function editar(idRegiao, idEstado, Descricao) {
+
+        $("#cbxEstado").val(idEstado).change();
+        $("#txtDescricao").val(Descricao);
+        $("#IdRegiaoEdit").val(idRegiao);
+        $("#btnSalvar").html("Alterar");
+        HideValidators();
+
+  
+
+    }
+
+    function HideValidators() {
+        $("#validationEstado").hide();
+        $("#validationDescricao").hide();
+    }
+
+    
+
+
+</script>    
+    
+}

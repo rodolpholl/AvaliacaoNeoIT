@@ -1,0 +1,65 @@
+    .divBack {
+        background-color: blanchedalmond;
+        border: solid 1px;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .obrigatorio {
+        color: red;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    .UF {
+        font-size: 15px;
+    }
+
+    .container1 {
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+        max-width: 1170px;
+    }
+
+    .select {
+        margin-left: 36px;
+        display: inline-block;
+    }
+
+    .input {
+        margin-left: 10px;
+        display: inline-block;
+    }
+
+    .espacamento-vert {
+        margin-top: 10px;
+    }
+
+    .form {
+        margin-top: 15px;
+    }
+
+    .grid {
+        margin-top: 15px;
+    }
+
+    table {
+        background-color: transparent;
+        border: 1px solid #dddddd;
+        width: 100%;
+    }
+        
+    table td,table th{
+        border: 1px solid #dddddd;
+        padding:5px;
+    	text-align: start;
+	
+    }
+
+    table th{
+	background-color: #C9C9C9;
+    }
